@@ -1,0 +1,40 @@
+{
+  "name": "fs-challange",
+  "version": "1.0.0",
+  "description": "Fullstack Demo Application",
+  "scripts": {
+    "start": "node dist/commonjs/start.js",
+    "build": "tsc",
+    "test": "./node_modules/mocha/bin/mocha test/**/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stefan-heuer/sms-fs-challange.git"
+  },
+  "keywords": [],
+  "author": "Stefan Heuer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stefan-heuer/sms-fs-challange/issues"
+  },
+  "homepage": "https://github.com/stefan-heuer/sms-fs-challange#readme",
+  "dependencies": {
+    "pg": "7.6.0",
+    "ramda": "0.25.0",
+    "sequelize": "4.32.1"
+  },
+  "devDependencies": {
+    "proxyquire": "^2.1.0",
+    "@babel/core": "7.1.2",
+    "@babel/preset-env": "7.1.0",
+    "@types/bluebird": "3.5.24",
+    "@types/node": "10.11.4",
+    "@types/ramda": "0.25.36",
+    "@types/sequelize": "4.27.4",
+    "pg-test-util": "2.0.4",
+    "sinon": "6.1.4",
+    "tslint-config-5minds": "1.0.6",
+    "typescript": "3.2.2",
+    "mocha": "^3.4.1"
+  }
+}

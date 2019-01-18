@@ -1,12 +1,13 @@
 import * as BluebirdPromise from 'bluebird';
 import * as Debug from 'debug';
-import * as R from 'ramda';
+import {isNil, is, map, filter, pipe} from 'ramda';
 import * as Sequelize from 'sequelize';
+import {inspect} from 'util'
 
 import {IConferenceEventInstance,} from './contracts';
 
 import {IConferenceEvent, IConferenceEventWithId, IConferenceEventUpdate, ConferenceEventValidationError,
-  ConferenceEventExistsError, ConferenceEventNotFoundError, IConferenceEventRepository} from '../contracts';
+  ConferenceEventNotFoundError, IConferenceEventRepository} from '../domain_contracts';
 
 import {ERROR_MESSAGES} from '../api_constants';
 
@@ -17,23 +18,23 @@ const debug: Debug.IDebugger = Debug('huf:ConferenceEvent_repository');
 
 function isSequelizeConferenceEventModel(model: Sequelize.Model<IConferenceEventInstance, IConferenceEvent> | undefined | null):
   model is Sequelize.Model<IConferenceEventInstance, IConferenceEvent> {
-    return !R.isNil(model);
+    return !isNil(model);
 }
 
 function isIConferenceEventInstance(ConferenceEventInstance: IConferenceEventInstance | undefined | null):
   ConferenceEventInstance is IConferenceEventInstance {
-    return !R.isNil(ConferenceEventInstance);
+    return !isNil(ConferenceEventInstance);
 }
 
 function isIConferenceEvent(conferenceEvent: IConferenceEvent  | undefined | null): conferenceEvent is IConferenceEvent  {
 
-    return !R.isNil(conferenceEvent)
-      && R.is(String, conferenceEvent.city)
-      && R.is(Date, conferenceEvent.startDate)
-      && R.is(Date, conferenceEvent.endDate)
-      && R.is(Number, conferenceEvent.price)
-      && R.is(String, conferenceEvent.status)
-      && R.is(String, conferenceEvent.color);
+    return !isNil(conferenceEvent)
+      && is(String, conferenceEvent.city)
+      && is(Date, conferenceEvent.startDate)
+      && is(Date, conferenceEvent.endDate)
+      && is(Number, conferenceEvent.price)
+      && is(String, conferenceEvent.status)
+      && is(String, conferenceEvent.color);
 
 }
 
@@ -44,7 +45,7 @@ function isIConferenceEvent(conferenceEvent: IConferenceEvent  | undefined | nul
  * @return {Array<IConferenceEvent>}
  */
 const conferenceEventInstances2ConferenceEvents = <{(ConferenceEventInstances: Array<IConferenceEventInstance>): Array<IConferenceEvent>}>
-  R.pipe(R.map(conferenceEventInstance2ConferenceEvent), R.filter(R.is(Object)));
+  pipe(map(conferenceEventInstance2ConferenceEvent), filter(is(Object)));
 
 /**
  * Turns an instance of IConferenceEventInstance to an instance of IConferenceEvent or returns null if ConferenceEventInstance
@@ -88,7 +89,7 @@ export class ConferenceEventRepository implements IConferenceEventRepository {
    */
   private get conferenceEventModel(): Sequelize.Model<IConferenceEventInstance, IConferenceEvent> {
     if (!isSequelizeConferenceEventModel(this._conferenceEventModel)) {
-      throw new Error(`${ERROR_MESSAGES.INVALID_STATE}:_ConferenceEventModel_NOT_intitialized'`);
+      throw new Error(`${ERROR_MESSAGES.INVALID_STATE}:_NOT_intitialized'`);
     }
     return this._conferenceEventModel;
   }
@@ -111,15 +112,13 @@ export class ConferenceEventRepository implements IConferenceEventRepository {
    * @method add
    * @override IConferenceEventRepository#add
    */
-  public add(ConferenceEvent: IConferenceEvent): BluebirdPromise<void> {
-    return !isIConferenceEvent(ConferenceEvent) ?
-      BluebirdPromise.reject(new ConferenceEventValidationError('INVALID_IConferenceEvent'))
+  public add(conferenceEvent: IConferenceEvent): BluebirdPromise<number> {
+    return !isIConferenceEvent(conferenceEvent) ?
+      BluebirdPromise.reject(new ConferenceEventValidationError(`INVALID_IConferenceEvent: ${inspect(conferenceEvent)}`))
       : BluebirdPromise.try(async() => {
-        const ConferenceEventInstance = await this.conferenceEventModel.build(ConferenceEvent);
-        await ConferenceEventInstance.save();
-      })
-      .catch(Sequelize.UniqueConstraintError, (cause) => {
-        throw new ConferenceEventExistsError('REFERNCED_ConferenceEvent_EXTSTS', cause);
+        const conferenceEventInstance = await this.conferenceEventModel.build(conferenceEvent);
+        const savedInstance = await conferenceEventInstance.save();
+        return savedInstance.id;
       })
       .catch(Sequelize.ValidationError, (cause) => {
         throw new ConferenceEventValidationError(cause.message, cause);
@@ -167,7 +166,7 @@ export class ConferenceEventRepository implements IConferenceEventRepository {
       const id = conferenceEventUpdate.id;
       const conferenceEvent = await this.conferenceEventModel.findById(id);
 
-      if(R.isNil(conferenceEvent)) {
+      if(isNil(conferenceEvent)) {
         throw new ConferenceEventNotFoundError(`UNKNOWN_ConferenceEvent_REFERENCE-Id: ${id}`);
       }
 

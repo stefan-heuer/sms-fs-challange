@@ -66,7 +66,31 @@ export interface IConferenceEvent {
 }
 
 /**
+ * @extends {IConferenceEvent}
+ */
+export interface IConferenceEventWithId extends IConferenceEvent {
+  id: number;
+}
+
+/**
+ * Describes the domain object used to update a conference event
+ *  refer too {IConferenceEvent} for property description
+ * @interface IConferenceEventUpdate
+ */
+export interface IConferenceEventUpdate {
+  id: number;
+  city?: string,
+  startDate?: Date,
+  endDate?: Date,
+  price?: number,
+  status?: Status,
+  color?: string
+}
+
+/**
  * The Repository to access and write instances of IConferenceEvent
+ * abstracting the concrete technique to store the data
+ * 
  * @interface IConferenceEventRepository
  */
 export interface IConferenceEventRepository {
@@ -75,29 +99,44 @@ export interface IConferenceEventRepository {
    * Adds a conferenceEvent to the data store
    * @method addConferenceEvent
    * @param conferenceEvent {IConferenceEvent} the conferenceEvent to add to the data store
-   * @return BluebirdPromise<IConferenceEvent>
+   * @return BluebirdPromise<number> the id of the created conference event
    * @throws {ConferenceEventValidationError} if conferenceEvent does not support all required propeties
-   * @throws {ConferenceEventExistsError} if an conferenceEvent already extists in the system with
-   *  tenandId and externalConferenceEventRef set to poroperties tenandId and externalConferenceEventRef
-   *  of parameter conferenceEvent
    */
-  add(conferenceEvent: IConferenceEvent): BluebirdPromise<void>;
+  add(conferenceEvent: IConferenceEvent): BluebirdPromise<number>;
 
   /**
-   * Get an conferenceEvent by id
+   * Get a conferenceEvent by id
    * @method get
    * @param {number} id the id of the conferenceEvent
-   * @return BluebirdPromise<IConferenceEvent> the instance of IConferenceEvent related to the passed externalConferenceEventRef
+   * @return BluebirdPromise<IConferenceEvent> the instance of IConferenceEvent related to the passed id
+   * @throws {ConferenceEventNotFoundError} if no conference event is related to the id passed
    */
-  get(id: number): BluebirdPromise<IConferenceEvent>;
+  get(id: number): BluebirdPromise<IConferenceEventWithId>;
 
   /**
    * Get all conferenceEvents
    * @method get
    * @return BluebirdPromise<Array<IConferenceEvent>> resolves to an arrays of all conferenceEvents
-   *  or to an arry of all conferenceEvents belonging to teh referenced tenant if parameter tentId is set
    */
-  getAll(): BluebirdPromise<Array<IConferenceEvent>>;
+  getAll(): BluebirdPromise<Array<IConferenceEventWithId>>;
+
+  /**
+   * Delete a conferenceEvent by id
+   * @method get
+   * @param {number} id the id of the conferenceEvent
+   * @return BluebirdPromise<void>
+   * @throws {ConferenceEventNotFoundError} if no conference event is related to the id passed
+   */
+  delete(id: number): BluebirdPromise<void>;
+
+  /**
+   * Update a conferenceEvent with update info passed
+   * @method update
+   * @param {IConferenceEventUpdate} conferenceEventUpdate the update info
+   * @return BluebirdPromise<IConferenceEventWithId> a promise that resolves to the updated conference event
+   * @throws {ConferenceEventNotFoundError} if no conference event is related to the id passed
+   */
+  update(conferenceEventUpdate: IConferenceEventUpdate): BluebirdPromise<IConferenceEventWithId>; 
 }
 
 class BaseError extends Error {
@@ -108,4 +147,3 @@ class BaseError extends Error {
 
 export class ConferenceEventValidationError extends BaseError {}
 export class ConferenceEventNotFoundError extends BaseError {}
-export class ConferenceEventExistsError extends BaseError {}

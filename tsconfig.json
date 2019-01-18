@@ -1,0 +1,32 @@
+{
+  "typingOptions": {
+    "enableAutoDiscovery": true
+  },
+  "compileOnSave": true,
+  "compilerOptions": {
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "outDir": "./dist/commonjs",
+    "noImplicitAny": false,
+    "noEmitOnError": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "target": "es6",
+    "sourceMap": true
+  },
+  "include": [
+    "src/*",
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "./test/**/*.ts",
+    "dist",
+    "build",
+    "doc",
+    "test",
+    "config.js",
+    "gulpfile.js"
+  ]
+}

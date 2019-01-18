@@ -1,5 +1,5 @@
 import * as Debug from 'debug';
-import * as R from 'ramda';
+import {isNil, merge} from 'ramda';
 import * as Sequelize from 'sequelize';
 
 const debug: Function = Debug('huf:postgres');
@@ -14,7 +14,7 @@ export interface IPostgreSqlConnectionConfig {
 }
 
 function isConnection(connection: Sequelize.Sequelize | undefined): connection is Sequelize.Sequelize {
-  return !R.isNil(connection);
+  return !isNil(connection);
 }
 
 /**
@@ -23,16 +23,16 @@ function isConnection(connection: Sequelize.Sequelize | undefined): connection i
  * @return {Number} the hash
  */
 export function getConfigHash(config: IPostgreSqlConnectionConfig): number {
-  if (R.isNil(config)) {
+  if (isNil(config)) {
     return -1;
   }
   const prime: number = 31;
   let result: number = 1;
-  result = (prime * result) + (R.isNil(config.host) ? 0 : djb2Code(config.host));
-  result = (prime * result) + (R.isNil(config.port) ? 0 : config.port);
-  result = (prime * result) + (R.isNil(config.user) ? 0 : djb2Code(config.user));
-  result = (prime * result) + (R.isNil(config.password) ? 0 : djb2Code(config.password));
-  result = (prime * result) + (R.isNil(config.database) ? 0 : djb2Code(config.database));
+  result = (prime * result) + (isNil(config.host) ? 0 : djb2Code(config.host));
+  result = (prime * result) + (isNil(config.port) ? 0 : config.port);
+  result = (prime * result) + (isNil(config.user) ? 0 : djb2Code(config.user));
+  result = (prime * result) + (isNil(config.password) ? 0 : djb2Code(config.password));
+  result = (prime * result) + (isNil(config.database) ? 0 : djb2Code(config.database));
   return result;
 }
 
@@ -88,11 +88,11 @@ export class PostgreSqlConnectionFactory {
    * @return {Sequelize.Sequelize} The connection for the current configuration.
    */
   public getConnection(config?: IPostgreSqlConnectionConfig): Sequelize.Sequelize  {
-    if (R.isNil(this.config) && R.isNil(config)) {
+    if (isNil(this.config) && isNil(config)) {
       throw new Error('Eihter call getConnection with param config or set config of PostgreSqlConnectionFactory or both');
     }
 
-    const postgreSqlConnectionConfig: IPostgreSqlConnectionConfig =  R.merge(this.config, config);
+    const postgreSqlConnectionConfig: IPostgreSqlConnectionConfig =  merge(this.config, config);
     const hash: number = getConfigHash(postgreSqlConnectionConfig);
     if (isConnection(connections[hash])) {
       return connections[hash];
