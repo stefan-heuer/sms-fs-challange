@@ -70,7 +70,8 @@ Base endpoint http://localhost:8000/api
 
 #### Create example
 
-Post /conference/
+```
+POST /conference/
 {
     "city": "Düssedlorf",
     "start_date": "3/7/2015",
@@ -79,24 +80,27 @@ Post /conference/
     "status": "Often",
     "color": "#2434"
 }
+```
 
 Error codes 400 Bad service on wrong payload
 All properties are required
 
 response 200 OK example
-
+```
 {
     "id": 156
 }
+```
 
 #### Read example
-
+```
 Get /conference/156
+```
 
 Error codes 404 Not Found on unknown id
 
 response 200 OK example
-
+```
 {
     "id": 156,
     "city": "Düssedlorf",
@@ -106,9 +110,10 @@ response 200 OK example
     "status": "Often",
     "color": "#2434"
 }
+```
 
 #### Update example
-
+```
 PUT /conference/156
 {
     "city": "Düssedlorf",
@@ -118,10 +123,12 @@ PUT /conference/156
     "status": "Often",
     "color": "#2434"
 }
+```
 
 Error codes 404 Not Found on unknown id
 All properties are optional
 
+```
 response 200 OK example
 
 {
@@ -133,3 +140,16 @@ response 200 OK example
     "status": "Often",
     "color": "#2434"
 }
+```
+
+#### DELET example
+```
+DELETE  /conference/156
+```
+
+Error codes 404 Not Found on unknown id
+
+response 200 OK example
+```
+ok
+```
