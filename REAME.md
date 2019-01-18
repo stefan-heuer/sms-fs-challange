@@ -16,7 +16,7 @@ npm install
 
 ```
 npm run build
-``
+```
 
 ## Test
 
